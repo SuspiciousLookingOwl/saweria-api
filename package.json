@@ -1,6 +1,6 @@
 {
-  "name": "saweria-api",
-  "version": "1.0.0",
+  "name": "saweria",
+  "version": "0.0.1",
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
