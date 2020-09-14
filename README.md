@@ -13,7 +13,7 @@ npm install saweria
 ```js
 const SaweriaClient = require("saweria");
 
-const client = SaweriaClient();
+const client = new SaweriaClient();
 
 (async() => {
     await client.login("email", "password");
