@@ -4,8 +4,8 @@ import { AxiosInstance } from "axios";
 import { User, Transaction } from "./types";
 
 class SaweriaClient {
-	public jwt: string;
-	public axios: AxiosInstance;
+	private jwt: string;
+	private axios: AxiosInstance;
 	
 	constructor() {
 		this.jwt = "";
