@@ -11,7 +11,11 @@
     "lint:check": "eslint .",
     "lint:fix": "eslint . --fix"
   },
-  "author": "",
+  "author": "SuspiciousLookingOwl",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SuspiciousLookingOwl/saweria-api.git"
+  },
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^14.10.1",
