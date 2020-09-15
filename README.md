@@ -26,7 +26,7 @@ const client = new SaweriaClient();
 
 ---
 
-### async login(email, password)
+### `async login(email, password)`
 
 Login to Saweria (2FA is not supported yet).
 
@@ -36,13 +36,13 @@ Returns [`User`](src/types.ts) object if succeed.
 
 ---
 
-### logout()
+### `logout()`
 
 Removes authorization header from HTTP client, preventing future requests.
 
 ---
 
-### setJWT(jwt)
+### `setJWT(jwt)`
 
 Set the default header authorization value for the future requests with passed JWT.
 
@@ -50,25 +50,25 @@ If you already have your JWT, you can call this function and pass the JWT instea
 
 ---
 
-### async getStreamKey()
+### `async getStreamKey()`
 
 Get user's stream key
 
 ---
 
-### async getBalance()
+### `async getBalance()`
 
 Get user's balance
 
 ---
 
-### async getAvailableBalance()
+### `async getAvailableBalance()`
 
 Get user's available balance to disburse
 
 ---
 
-### async getTransaction(page, pageSize)
+### `async getTransaction(page, pageSize)`
 
 Get user's transaction list. Accepts these parameters:
 
