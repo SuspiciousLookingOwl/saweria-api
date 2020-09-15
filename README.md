@@ -42,7 +42,7 @@ Removes authorization header from HTTP client, preventing future requests.
 
 ---
 
-### setJwt(jwt)
+### setJWT(jwt)
 
 Set the default header authorization value for the future requests with passed JWT.
 

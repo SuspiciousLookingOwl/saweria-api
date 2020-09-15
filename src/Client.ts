@@ -25,7 +25,7 @@ class SaweriaClient {
 		const response = await this.axios[ep.LOGIN.method](ep.LOGIN.url, { email, password });
 		
 		if (response.status !== 200) throw new Error(response.data);
-		this.setJwt(response.headers.authorization);
+		this.setJWT(response.headers.authorization);
 		return response.data.data;
 	}
 
@@ -44,7 +44,7 @@ class SaweriaClient {
 	 * 
 	 * @param jwt JSON Web Token
 	 */
-	setJwt(jwt: string): void {
+	setJWT(jwt: string): void {
 		this.jwt = jwt;
 		this.axios.defaults.headers.common.authorization = this.jwt;
 	}
