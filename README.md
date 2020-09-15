@@ -80,3 +80,11 @@ Get user's transaction list. Accepts these parameters:
 ### `async getMilestoneProgress(fromDate)`
 
 Get milestone progress from passed date with `dd-mm-yyyy` format until now.
+
+---
+
+### `async getLeaderboard(period = "all")`
+
+Get donation leaderboard from given time period.
+
+`period` can be `"all"`, `"year"`, `"month"`, or `"week"` (Default = `"all"`)

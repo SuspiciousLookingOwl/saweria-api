@@ -22,5 +22,9 @@ export default {
 	MILESTONE_PROGRESS: {
 		url: "https://api.saweria.co/widgets/milestone-progress",
 		method: "get"
+	},
+	LEADERBOARD: {
+		url: "https://api.saweria.co/widgets/leaderboard",
+		method: "get"
 	}
 } as const;

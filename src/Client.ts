@@ -1,7 +1,7 @@
 import axios from "./axios";
 import ep from "./endpoints";
 import { AxiosInstance } from "axios";
-import { User, Transaction } from "./types";
+import { User, Transaction, Donation } from "./types";
 
 class SaweriaClient {
 	private jwt: string;
@@ -118,6 +118,27 @@ class SaweriaClient {
 			}
 		});
 		return response.data.data.progress;
+	}
+
+
+	/**
+	 * Get donation leaderboard from given period
+	 * 
+	 * @param period Time period, can be "all", "year", "month", or "week"
+	 * 
+	 * @returns {Donation[]}
+	 */
+	async getLeaderboard(period = "all"): Promise<Donation[]> {
+		const validPeriod = ["all", "year", "month", "week"];
+		if (!validPeriod.includes(period)) {
+			throw new Error("Invalid Period value");
+		}
+		const response = await this.axios[ep.LEADERBOARD.method](`${ep.LEADERBOARD.url}/${period}`, {
+			headers: {
+				"stream-key": await this.getStreamKey()
+			}
+		});
+		return response.data.data;
 	}
 }
 

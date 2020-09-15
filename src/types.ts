@@ -36,3 +36,8 @@ export interface Transaction {
     status: string;
     type: string;
 }
+
+export interface Donation {
+    amount: number;
+    donator: string;
+}
