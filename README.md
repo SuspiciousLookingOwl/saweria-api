@@ -74,3 +74,9 @@ Get user's transaction list. Accepts these parameters:
 
 - `page`: What page of transaction to get (Default = `1`)
 - `pageSize`: How many transactions per page (Default = `15`)
+
+---
+
+### `async getMilestoneProgress(fromDate)`
+
+Get milestone progress from passed date with `dd-mm-yyyy` format until now.

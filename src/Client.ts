@@ -5,10 +5,12 @@ import { User, Transaction } from "./types";
 
 class SaweriaClient {
 	private jwt: string;
+	private streamKey: string;
 	private axios: AxiosInstance;
 	
 	constructor() {
 		this.jwt = "";
+		this.streamKey = "";
 		this.axios = axios;
 	}
 
@@ -26,6 +28,7 @@ class SaweriaClient {
 		
 		if (response.status !== 200) throw new Error(response.data);
 		this.setJWT(response.headers.authorization);
+		await this.getStreamKey();
 		return response.data.data;
 	}
 
@@ -56,8 +59,11 @@ class SaweriaClient {
 	 * @returns {string}
 	 */
 	async getStreamKey(): Promise<string> {
-		const response = await this.axios[ep.STREAM_KEY.method](ep.STREAM_KEY.url);
-		return response.data.data.streamKey;
+		if (!this.streamKey) {
+			const response = await this.axios[ep.STREAM_KEY.method](ep.STREAM_KEY.url);
+			this.streamKey = response.data.data.streamKey; 
+		}
+		return this.streamKey;
 	}
 
 
@@ -94,6 +100,24 @@ class SaweriaClient {
 	async getTransaction(page = 1, pageSize = 15): Promise<Transaction[]> {
 		const response = await this.axios[ep.TRANSACTIONS.method](`${ep.TRANSACTIONS.url}?page=${page}&page_size=${pageSize}`);
 		return response.data.data.transactions || [];
+	}
+
+
+	/**
+	 * Get milestone progress from given date until now
+	 * 
+	 * @param fromDate From date with dd-mm-yyyy format
+	 * 
+	 * @returns {number} 
+	 */
+	async getMilestoneProgress(fromDate: string): Promise<number> {
+
+		const response = await this.axios[ep.MILESTONE_PROGRESS.method](`${ep.MILESTONE_PROGRESS.url}?start_date=${fromDate}`, {
+			headers: {
+				"stream-key": await this.getStreamKey()
+			}
+		});
+		return response.data.data.progress;
 	}
 }
 

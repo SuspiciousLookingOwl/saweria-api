@@ -18,5 +18,9 @@ export default {
 	STREAM_KEY: {
 		url: "https://api.saweria.co/auth/stream-key",
 		method: "get"
+	},
+	MILESTONE_PROGRESS: {
+		url: "https://api.saweria.co/widgets/milestone-progress",
+		method: "get"
 	}
 } as const;
