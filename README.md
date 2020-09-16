@@ -2,7 +2,7 @@
 
 Node.js API Wrapper for [Saweria.co](https://saweria.co/)
 
-## Installatioin
+## Installation
 
 ```
 npm install saweria
