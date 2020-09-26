@@ -25,7 +25,9 @@
     "typescript": "^4.0.2"
   },
   "dependencies": {
+    "@types/eventsource": "^1.1.4",
     "axios": "^0.20.0",
-    "axios-case-converter": "^0.6.0"
+    "axios-case-converter": "^0.6.0",
+    "eventsource": "^1.0.7"
   }
 }

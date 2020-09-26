@@ -41,3 +41,11 @@ export interface Donation {
     amount: number;
     donator: string;
 }
+
+export type EventTypes = "login" | "donation" | "error";
+
+export type EventCallbackTypes<T> =
+    T extends "login" ? (user: User) => void:
+    T extends "donation" ? (donation: Donation) => void:
+    T extends "error" ? (error: any) => void:
+    any

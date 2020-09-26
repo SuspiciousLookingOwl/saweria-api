@@ -1,18 +1,60 @@
 import axios from "./axios";
+import EventSource from "eventsource";
 import ep from "./endpoints";
 import { AxiosInstance } from "axios";
-import { User, Transaction, Donation } from "./types";
+import { User, Transaction, Donation, EventTypes, EventCallbackTypes } from "./types";
 
 class SaweriaClient {
 	private jwt: string;
 	private streamKey: string;
 	private axios: AxiosInstance;
+	private events: Record<string, EventCallbackTypes<string>[]>;
+	private eventSource: EventSource | null;
 	
-	constructor() {
+	constructor(axiosClient = axios) {
 		this.jwt = "";
+		this.events = {};
 		this.streamKey = "";
-		this.axios = axios;
+		this.axios = axiosClient;
+		this.eventSource = null;
 	}
+
+
+
+	/**
+	 * FOR EVENT LISTENER
+	 */
+	on<T extends EventTypes>(name: T, listener: EventCallbackTypes<T>): void {
+		if (!this.events[name]) this.events[name] = [];
+		this.events[name].push(listener);
+	}
+
+	
+	removeListener(name: string, listenerToRemove: () => void): void {
+		if (!this.events[name]) return;
+		this.events[name] = this.events[name].filter((listener) => listener !== listenerToRemove);
+	}
+	
+	private emit(name: string, data: unknown): void {
+		if (!this.events[name]) return;   
+		this.events[name].forEach((callback) => { callback(data); });
+	}
+
+	/**
+	 * Connects to Saweria event source endpoint for donation listener
+	 * 
+	 * @returns {string}
+	 */
+	private async initiateEventSource(): Promise<void> {
+		this.eventSource = new EventSource(`https://api.saweria.co/streams?channel=donation.${await this.getStreamKey()}`);
+		this.eventSource.addEventListener("donations", (message: any) => {
+			this.emit("donation", JSON.parse(message.data).data);
+		});
+		this.eventSource.addEventListener("error", (error) => {
+			this.emit("error", error);
+		});
+	}
+
 
 
 	/**
@@ -20,16 +62,18 @@ class SaweriaClient {
 	 * 
 	 * @param email User email
 	 * @param password User password
+	 * @param otp OTP if the account have 2FA enabled
 	 * 
 	 * @returns {User}
 	 */
-	async login(email: string, password: string): Promise<User> {
+	async login(email: string, password: string): Promise<void> {
 		const response = await this.axios[ep.LOGIN.method](ep.LOGIN.url, { email, password });
 		
 		if (response.status !== 200) throw new Error(response.data);
 		this.setJWT(response.headers.authorization);
 		await this.getStreamKey();
-		return response.data.data;
+		await this.initiateEventSource();
+		this.emit("login", response.data.data as User);
 	}
 
 
@@ -39,6 +83,7 @@ class SaweriaClient {
 	logout(): void {
 		this.jwt = "";
 		this.axios.defaults.headers.common.authorization = "";
+		this.eventSource = null;
 	}
 
 
