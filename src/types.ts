@@ -42,10 +42,19 @@ export interface Donation {
     donator: string;
 }
 
+export interface EmittedDonation extends Donation {
+    media?: {
+        src: string[],
+        tag: string
+      },
+    message: string,
+    sound: Record<string,string>
+}
+
 export type EventTypes = "login" | "donation" | "error";
 
 export type EventCallbackTypes<T> =
     T extends "login" ? (user: User) => void:
-    T extends "donation" ? (donation: Donation) => void:
+    T extends "donation" ? (donation: EmittedDonation) => void:
     T extends "error" ? (error: any) => void:
     any

@@ -15,24 +15,28 @@ const SaweriaClient = require("saweria");
 
 const client = new SaweriaClient();
 
-(async() => {
-    await client.login("email", "password");
-    console.log(await client.getBalance());
-})();
+
+client.on("login", (user) => {
+	console.log("Logged in as: ", user.username);
+});
+
+client.on("donation", (donation) => {
+	console.log(donation);
+});
+
+client.login("email", "password");
+// or with otp
+client.login("email", "password", "otp");
 
 ```
 
-## Client API
+# Client API
 
----
+### `async login(email, password, otp = "")`
 
-### `async login(email, password)`
-
-Login to Saweria (2FA is not supported yet).
+Login to Saweria. If the account has no 2FA enabled, `otp` will be ignored.
 
 This will set the default header authorization value for the future requests with user's JWT
-
-Returns [`User`](src/types.ts) object if succeed.
 
 ---
 
@@ -68,7 +72,7 @@ Get user's available balance to disburse
 
 ---
 
-### `async getTransaction(page, pageSize)`
+### `async getTransaction(page = 1, pageSize = 15)`
 
 Get user's transaction list. Accepts these parameters:
 
@@ -88,3 +92,36 @@ Get milestone progress from passed date with `dd-mm-yyyy` format until now.
 Get donation leaderboard from given time period.
 
 `period` can be `"all"`, `"year"`, `"month"`, or `"week"` (Default = `"all"`)
+
+---
+
+### `on(eventName, callback)`
+
+Listen to client [events](#Client-Events) and execute `callback` when emitted
+
+
+# Client Events
+
+### `login`
+
+Emitted when client successfully logged in. Callback accepts [`User`](src/types.ts) as the first parameter 
+
+Example:
+```js
+client.on("login", (user) => {
+	console.log("Logged in as: ", user.username);
+});
+```
+
+---
+
+### `donation`
+
+Emitted when client received a donation. Callback accepts [`EmittedDonation`](src/types.ts) as the first parameter
+
+Example:
+```js
+client.on("donation", (donation) => {
+    console.log(donation);
+})
+```
