@@ -66,8 +66,8 @@ class SaweriaClient {
 	 * 
 	 * @returns {User}
 	 */
-	async login(email: string, password: string): Promise<void> {
-		const response = await this.axios[ep.LOGIN.method](ep.LOGIN.url, { email, password });
+	async login(email: string, password: string, otp: string): Promise<void> {
+		const response = await this.axios[ep.LOGIN.method](ep.LOGIN.url, { email, password, otp });
 		
 		if (response.status !== 200) throw new Error(response.data);
 		this.setJWT(response.headers.authorization);
