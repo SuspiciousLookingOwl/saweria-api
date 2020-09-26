@@ -125,3 +125,23 @@ client.on("donation", (donation) => {
     console.log(donation);
 })
 ```
+
+Donation data example:
+```js
+{
+  amount: '69420',
+  donator: 'Someguy',
+  media: {
+    src: [
+      'https://media2.giphy.com/media/gw3IWyGkC0rsazTi/giphy.webp',
+      'https://media2.giphy.com/media/gw3IWyGkC0rsazTi/giphy.mp4',
+      'https://media2.giphy.com/media/gw3IWyGkC0rsazTi/giphy.gif'
+    ],
+    tag: 'picture'
+  },
+  message: 'THIS IS A FAKE MESSAGE! HAVE A GOOD ONE',
+  sound: {
+    '1547679809default.ogg': 'https://saweria-space.sgp1.cdn.digitaloceanspaces.com/prd/sound/836d7a85-dd70-4028-85fb-00fd785f0928-c527b4f6bd6282e21e78c85343d496fa.ogg'
+  }
+}
+```
