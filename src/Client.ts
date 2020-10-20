@@ -50,7 +50,8 @@ class SaweriaClient {
 		this.eventSource = new EventSource(`https://api.saweria.co/streams?channel=donation.${await this.getStreamKey()}`);
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		this.eventSource.addEventListener("donations", (message: any) => {
-			this.emit("donation", JSON.parse(message.data).data);
+			const donation = JSON.parse(message.data).data;
+			this.emit("donation", { ...donation, amount: +donation.amount });
 		});
 		this.eventSource.addEventListener("error", (error) => {
 			this.emit("error", error);
