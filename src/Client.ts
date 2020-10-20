@@ -1,6 +1,6 @@
 import axios from "./axios";
 import EventSource from "eventsource";
-import ep from "./endpoints";
+import ENDPOINT from "./endpoints";
 import { AxiosInstance } from "axios";
 import { User, Transaction, Donation, EventTypes, EventCallbackTypes } from "./types";
 
@@ -69,7 +69,7 @@ class SaweriaClient {
 	 * @returns {User}
 	 */
 	async login(email: string, password: string, otp: string): Promise<void> {
-		const response = await this.axios[ep.LOGIN.method](ep.LOGIN.url, { email, password, otp });
+		const response = await this.axios[ENDPOINT.LOGIN.METHOD](ENDPOINT.LOGIN.URL, { email, password, otp });
 		
 		if (response.status !== 200) throw new Error(response.data);
 		this.setJWT(response.headers.authorization);
@@ -106,7 +106,7 @@ class SaweriaClient {
 	 */
 	async getStreamKey(): Promise<string> {
 		if (!this.streamKey) {
-			const response = await this.axios[ep.STREAM_KEY.method](ep.STREAM_KEY.url);
+			const response = await this.axios[ENDPOINT.STREAM_KEY.METHOD](ENDPOINT.STREAM_KEY.URL);
 			this.streamKey = response.data.data.streamKey; 
 		}
 		return this.streamKey;
@@ -127,7 +127,7 @@ class SaweriaClient {
 	 * @returns {number}
 	 */
 	async getBalance(): Promise<number> {
-		const response = await this.axios[ep.BALANCE.method](ep.BALANCE.url);
+		const response = await this.axios[ENDPOINT.BALANCE.METHOD](ENDPOINT.BALANCE.URL);
 		return response.data.data.balance;
 	}
 
@@ -138,7 +138,7 @@ class SaweriaClient {
 	 * @returns {number}
 	 */
 	async getAvailableBalance(): Promise<number> {
-		const response = await this.axios[ep.AVAILABLE_BALANCE.method](ep.AVAILABLE_BALANCE.url);
+		const response = await this.axios[ENDPOINT.AVAILABLE_BALANCE.METHOD](ENDPOINT.AVAILABLE_BALANCE.URL);
 		return response.data.data.availableBalance;
 	}
 
@@ -152,7 +152,7 @@ class SaweriaClient {
 	 * @returns {Transaction[]}
 	 */
 	async getTransaction(page = 1, pageSize = 15): Promise<Transaction[]> {
-		const response = await this.axios[ep.TRANSACTIONS.method](`${ep.TRANSACTIONS.url}?page=${page}&page_size=${pageSize}`);
+		const response = await this.axios[ENDPOINT.TRANSACTIONS.METHOD](`${ENDPOINT.TRANSACTIONS.URL}?page=${page}&page_size=${pageSize}`);
 		return response.data.data.transactions || [];
 	}
 
@@ -166,7 +166,7 @@ class SaweriaClient {
 	 */
 	async getMilestoneProgress(fromDate: string | Date): Promise<number> {
 		if (fromDate instanceof Date) fromDate = fromDate.toJSON().slice(0,10).split("-").reverse().join("-");
-		const response = await this.axios[ep.MILESTONE_PROGRESS.method](`${ep.MILESTONE_PROGRESS.url}?start_date=${fromDate}`, {
+		const response = await this.axios[ENDPOINT.MILESTONE_PROGRESS.METHOD](`${ENDPOINT.MILESTONE_PROGRESS.URL}?start_date=${fromDate}`, {
 			headers: {
 				"stream-key": await this.getStreamKey()
 			}
@@ -187,7 +187,7 @@ class SaweriaClient {
 		if (!validPeriod.includes(period)) {
 			throw new Error("Invalid Period value");
 		}
-		const response = await this.axios[ep.LEADERBOARD.method](`${ep.LEADERBOARD.url}/${period}`, {
+		const response = await this.axios[ENDPOINT.LEADERBOARD.METHOD](`${ENDPOINT.LEADERBOARD.URL}/${period}`, {
 			headers: {
 				"stream-key": await this.getStreamKey()
 			}

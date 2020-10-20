@@ -1,30 +1,34 @@
 export default {
 	LOGIN: {
-		url: "https://api.saweria.co/auth/login",
-		method: "post"
+		URL: "https://api.saweria.co/auth/login",
+		METHOD: "post"
 	},
 	BALANCE: {
-		url: "https://api.saweria.co//donations/balance",
-		method: "get"
+		URL: "https://api.saweria.co//donations/balance",
+		METHOD: "get"
 	},
 	AVAILABLE_BALANCE: {
-		url: "https://api.saweria.co/donations/available-balance",
-		method: "get"
+		URL: "https://api.saweria.co/donations/available-balance",
+		METHOD: "get"
 	},
 	TRANSACTIONS: {
-		url: "https://api.saweria.co/transactions",
-		method: "get"
+		URL: "https://api.saweria.co/transactions",
+		METHOD: "get"
 	},
 	STREAM_KEY: {
-		url: "https://api.saweria.co/auth/stream-key",
-		method: "get"
+		URL: "https://api.saweria.co/auth/stream-key",
+		METHOD: "get"
 	},
 	MILESTONE_PROGRESS: {
-		url: "https://api.saweria.co/widgets/milestone-progress",
-		method: "get"
+		URL: "https://api.saweria.co/widgets/milestone-progress",
+		METHOD: "get"
 	},
 	LEADERBOARD: {
-		url: "https://api.saweria.co/widgets/leaderboard",
-		method: "get"
+		URL: "https://api.saweria.co/widgets/leaderboard",
+		METHOD: "get"
+	},
+	FAKE: {
+		URL: "https://api.saweria.co/donations/fake",
+		METHOD: "get"
 	}
 } as const;
