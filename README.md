@@ -29,6 +29,18 @@ client.login("email", "password");
 client.login("email", "password", "otp");
 
 ```
+or only for donation event listener
+```js
+const SaweriaClient = require("saweria");
+
+const client = new SaweriaClient();
+
+client.setStreamKey("your-stream-key");
+
+client.on("donation", (donation) => {
+	console.log(donation);
+});
+```
 
 # Client API
 
@@ -51,6 +63,12 @@ Removes authorization header from HTTP client, preventing future requests.
 Set the default header authorization value for the future requests with passed JWT.
 
 If you already have your JWT, you can call this function and pass the JWT instead of login
+
+---
+
+### `async setStreamKey(streamKey)`
+
+Set the client's stream key, this can be used to listen to donation event without logging in.
 
 ---
 
@@ -92,6 +110,12 @@ Get milestone progress from passed date with `dd-mm-yyyy` format until now.
 Get donation leaderboard from given time period.
 
 `period` can be `"all"`, `"year"`, `"month"`, or `"week"` (Default = `"all"`)
+
+---
+
+### `async sendFakeDonation()`
+
+Send a fake donation
 
 ---
 
