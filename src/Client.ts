@@ -156,8 +156,8 @@ class SaweriaClient {
 	 * 
 	 * @returns {number} 
 	 */
-	async getMilestoneProgress(fromDate: string): Promise<number> {
-
+	async getMilestoneProgress(fromDate: string | Date): Promise<number> {
+		if (fromDate instanceof Date) fromDate = fromDate.toJSON().slice(0,10).split("-").reverse().join("-");
 		const response = await this.axios[ep.MILESTONE_PROGRESS.method](`${ep.MILESTONE_PROGRESS.url}?start_date=${fromDate}`, {
 			headers: {
 				"stream-key": await this.getStreamKey()
