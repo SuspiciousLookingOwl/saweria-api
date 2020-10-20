@@ -68,7 +68,7 @@ class SaweriaClient {
 	 * 
 	 * @returns {User}
 	 */
-	async login(email: string, password: string, otp: string): Promise<void> {
+	async login(email: string, password: string, otp?: string): Promise<void> {
 		const response = await this.axios[ENDPOINT.LOGIN.METHOD](ENDPOINT.LOGIN.URL, { email, password, otp });
 		
 		if (response.status !== 200) throw new Error(response.data);
