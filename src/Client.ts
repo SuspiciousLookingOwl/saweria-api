@@ -84,7 +84,10 @@ class SaweriaClient {
 	logout(): void {
 		this.jwt = "";
 		this.axios.defaults.headers.common.authorization = "";
-		this.eventSource = null;
+		if (this.eventSource !== null) {
+			this.eventSource.close();
+			this.eventSource = null;
+		}
 	}
 
 
