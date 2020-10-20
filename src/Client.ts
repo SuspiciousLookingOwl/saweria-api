@@ -131,6 +131,13 @@ class SaweriaClient {
 		return response.data.data.balance;
 	}
 
+	/**
+	 * Send a fake donation
+	 */
+	async sendFakeDonation(): Promise<void> {
+		await this.axios[ENDPOINT.FAKE.METHOD](ENDPOINT.FAKE.URL);
+	}
+
 
 	/**
 	 * Get user available balance
