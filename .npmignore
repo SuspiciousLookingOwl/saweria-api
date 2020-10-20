@@ -1,3 +1,5 @@
 .github
 test
 src
+
+.env
