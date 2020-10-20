@@ -46,6 +46,7 @@ class SaweriaClient {
 	 * @returns {string}
 	 */
 	private async initiateEventSource(): Promise<void> {
+		if (this.eventSource !== null) this.eventSource.close();
 		this.eventSource = new EventSource(`https://api.saweria.co/streams?channel=donation.${await this.getStreamKey()}`);
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		this.eventSource.addEventListener("donations", (message: any) => {
@@ -72,7 +73,6 @@ class SaweriaClient {
 		
 		if (response.status !== 200) throw new Error(response.data);
 		this.setJWT(response.headers.authorization);
-		await this.getStreamKey();
 		await this.initiateEventSource();
 		this.emit("login", response.data.data as User);
 	}
@@ -110,6 +110,14 @@ class SaweriaClient {
 			this.streamKey = response.data.data.streamKey; 
 		}
 		return this.streamKey;
+	}
+
+	/**
+	 * Set user Stream key
+	 */
+	async setStreamKey(streamKey: string): Promise<void> {
+		this.streamKey = streamKey;
+		await this.initiateEventSource();
 	}
 
 
