@@ -30,5 +30,9 @@ export default {
 	FAKE: {
 		URL: "https://api.saweria.co/donations/fake",
 		METHOD: "get"
+	},
+	USER: {
+		URL: "https://api.saweria.co/users",
+		METHOD: "get"
 	}
 } as const;

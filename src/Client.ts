@@ -66,8 +66,6 @@ class SaweriaClient {
 	 * @param email User email
 	 * @param password User password
 	 * @param otp OTP if the account have 2FA enabled
-	 * 
-	 * @returns {User}
 	 */
 	async login(email: string, password: string, otp?: string): Promise<void> {
 		const response = await this.axios[ENDPOINT.LOGIN.METHOD](ENDPOINT.LOGIN.URL, { email, password, otp });
@@ -89,6 +87,17 @@ class SaweriaClient {
 			this.eventSource.close();
 			this.eventSource = null;
 		}
+	}
+
+
+	/**
+	 * Get user data
+	 * 
+	 * @returns {User}
+	 */
+	async getUser():Promise<User> {
+		const response = await this.axios[ENDPOINT.USER.METHOD](ENDPOINT.USER.URL);
+		return response.data.data;
 	}
 
 
