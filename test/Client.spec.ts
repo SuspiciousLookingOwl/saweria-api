@@ -14,6 +14,7 @@ describe("Saweria Client", () => {
 		expect(await saweria.getBalance()).toEqual(0);
 		expect(await saweria.getLeaderboard()).toEqual([]);
 		expect(await saweria.getTransaction()).toEqual([]);
+		expect((await saweria.getUser()).verified).toEqual(false); 
 	});
     
 	it("listen to donation event", async () => {
