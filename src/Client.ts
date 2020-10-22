@@ -67,13 +67,21 @@ class SaweriaClient {
 	 * @param password User password
 	 * @param otp OTP if the account have 2FA enabled
 	 */
-	async login(email: string, password: string, otp?: string): Promise<void> {
-		const response = await this.axios[ENDPOINT.LOGIN.METHOD](ENDPOINT.LOGIN.URL, { email, password, otp });
-		
-		if (response.status !== 200) throw new Error(response.data);
-		this.setJWT(response.headers.authorization);
+	async login(jwt: string): Promise<void>;
+	async login(email: string, password: string, otp?: string): Promise<void>;
+	async login(emailOrJwt: string, password?: string, otp?: string): Promise<void> {
+		let user: User;
+		if (password) {
+			const response = await this.axios[ENDPOINT.LOGIN.METHOD](ENDPOINT.LOGIN.URL, { email: emailOrJwt, password, otp });
+			if (response.status !== 200) throw new Error(response.data);
+			this.setJWT(response.headers.authorization);
+			user = response.data.data;
+		} else {
+			this.setJWT(emailOrJwt);
+			user = await this.getUser();
+		}
 		await this.initiateEventSource();
-		this.emit("login", response.data.data as User);
+		this.emit("login", user);
 	}
 
 
@@ -106,7 +114,7 @@ class SaweriaClient {
 	 * 
 	 * @param jwt JSON Web Token
 	 */
-	setJWT(jwt: string): void {
+	private setJWT(jwt: string): void {
 		this.jwt = jwt;
 		this.axios.defaults.headers.common.authorization = this.jwt;
 	}
