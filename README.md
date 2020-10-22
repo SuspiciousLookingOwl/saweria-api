@@ -44,9 +44,10 @@ client.on("donation", (donation) => {
 
 # Client API
 
+### `async login(jwt)`
 ### `async login(email, password, otp = "")`
 
-Login to Saweria. If the account has no 2FA enabled, `otp` will be ignored.
+Login to Saweria using jwt or email and password. If the account has no 2FA enabled, `otp` will be ignored.
 
 This will set the default header authorization value for the future requests with user's JWT
 
@@ -55,15 +56,6 @@ This will set the default header authorization value for the future requests wit
 ### `logout()`
 
 Removes authorization header from HTTP client, preventing future requests.
-
----
-
-### `setJWT(jwt)`
-
-Set the default header authorization value for the future requests with passed JWT.
-
-If you already have your JWT, you can call this function and pass the JWT instead of login
-
 ---
 
 ### `async setStreamKey(streamKey)`
