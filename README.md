@@ -58,6 +58,7 @@ This will set the default header authorization value for the future requests wit
 ### `logout()`
 
 Removes authorization header from HTTP client, preventing future requests.
+
 ---
 
 ### `async setStreamKey(streamKey)`
