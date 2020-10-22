@@ -22,20 +22,12 @@ describe("Saweria Client", () => {
 		saweria.on("donation", handler); 
 		await saweria.sendFakeDonation();
 		await new Promise(r => setTimeout(r, 250));
-		expect(handler).toBeCalledWith({
+		expect(handler).toBeCalledWith(expect.objectContaining({
 			amount: 69420,
 			donator: "Someguy",
-			media: {
-				src: [
-					"https://media3.giphy.com/media/gw3IWyGkC0rsazTi/giphy.webp",
-					"https://media3.giphy.com/media/gw3IWyGkC0rsazTi/giphy.mp4",
-					"https://media3.giphy.com/media/gw3IWyGkC0rsazTi/giphy.gif"
-				],
-				tag: "picture"
-			},
 			message: "THIS IS A FAKE MESSAGE! HAVE A GOOD ONE",
 			sound: null
-		});
+		}));
 	});
     
 	it("logout and prevent call", async () => {
