@@ -5,7 +5,7 @@ describe("Saweria Client", () => {
 	const saweria = new Saweria();
 
 	it("login", async () => {
-		await saweria.login(process.env.EMAIL, process.env.PASSWORD);
+		await saweria.login(process.env.EMAIL as string, process.env.PASSWORD as string);
 	});
     
 	it("get account information", async () => {
