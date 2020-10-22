@@ -1,6 +1,8 @@
 export interface User {
     description: string;
-    donationTemplate: string;
+    disbursementSaweriaCut?: number;
+    donationSaweriaCut?: number;
+    donationTemplate?: string;
     email: string;
     emailVerified: boolean;
     id: string;
@@ -8,7 +10,9 @@ export interface User {
         media: boolean;
         min: number;
         minMedia: number;
+        sound?: Record<string, string>;
     };
+    plus?: boolean;
     profilePicture: string;
     socials: {
         facebook: string;
@@ -17,9 +21,17 @@ export interface User {
         twitter: string;
         youtube: string;
     };
-    tierKey: string;
+    tierName?: string;
+    tierKey?: string;
     username: string;
     verified: boolean;
+    vote?: {
+        endAt: string;
+        on: boolean;
+        startAt: string;
+        tag: string[];
+        title: string;
+    }
 }
 
 export interface Transaction {
