@@ -2,10 +2,12 @@
 
 Node.js API Wrapper for [Saweria.co](https://saweria.co/)
 
+Check the [Changelog](https://github.com/SuspiciousLookingOwl/saweria-api/blob/master/CHANGELOG.md)
+
 ## Installation
 
 ```
-npm install saweria
+npm i saweria
 ```
 
 ## Example
@@ -67,6 +69,12 @@ Set the client's stream key, this can be used to listen to donation event withou
 ### `async getStreamKey()`
 
 Get user's stream key
+
+---
+
+### `async getUser()`
+
+Get user profile information
 
 ---
 
