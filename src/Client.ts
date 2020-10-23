@@ -5,7 +5,7 @@ import { AxiosInstance } from "axios";
 import { User, Transaction, Donation, EventTypes, EventCallbackTypes } from "./types";
 
 class SaweriaClient {
-	private jwt: string;
+	public jwt: string;
 	private streamKey: string;
 	private axios: AxiosInstance;
 	private events: Record<string, EventCallbackTypes<string>[]>;
