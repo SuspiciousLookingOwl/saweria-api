@@ -2,25 +2,25 @@ import Saweria from "../dist/Client";
 import "dotenv/config";
 
 describe("Saweria Client", () => {
-	const saweria = new Saweria();
+	const client = new Saweria();
 
 	it("login", async () => {
-		await saweria.login(process.env.EMAIL as string, process.env.PASSWORD as string);
+		await client.login(process.env.EMAIL as string, process.env.PASSWORD as string);
 	});
     
 	it("get account information", async () => {
-		expect(await saweria.getAvailableBalance()).toEqual(0);
-		expect(await saweria.getMilestoneProgress(new Date())).toEqual(0);
-		expect(await saweria.getBalance()).toEqual(0);
-		expect(await saweria.getLeaderboard()).toEqual([]);
-		expect(await saweria.getTransaction()).toEqual([]);
-		expect((await saweria.getUser()).verified).toEqual(false); 
+		expect(await client.getAvailableBalance()).toEqual(0);
+		expect(await client.getMilestoneProgress(new Date())).toEqual(0);
+		expect(await client.getBalance()).toEqual(0);
+		expect(await client.getLeaderboard()).toEqual([]);
+		expect(await client.getTransaction()).toEqual([]);
+		expect((await client.getUser()).verified).toEqual(false); 
 	});
     
 	it("listen to donation event", async () => {
 		const handler = jest.fn();
-		saweria.on("donation", handler); 
-		await saweria.sendFakeDonation();
+		client.on("donation", handler); 
+		await client.sendFakeDonation();
 		await new Promise(r => setTimeout(r, 250));
 		expect(handler).toBeCalledWith(expect.objectContaining({
 			amount: 69420,
@@ -31,8 +31,8 @@ describe("Saweria Client", () => {
 	});
     
 	it("logout and prevent call", async () => {
-		saweria.logout();
-		await expect(saweria.getBalance()).rejects.toThrowError();
+		client.logout();
+		await expect(client.getBalance()).rejects.toThrowError();
 	});
 });
 
