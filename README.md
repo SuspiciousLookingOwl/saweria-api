@@ -22,7 +22,7 @@ client.on("login", (user) => {
 	console.log("Logged in as: ", user.username);
 });
 
-client.on("donations", (donation) => {
+client.on("donations", (donations) => {
 	console.log(donations);
 });
 
@@ -39,7 +39,7 @@ const client = new SaweriaClient();
 
 client.setStreamKey("your-stream-key");
 
-client.on("donation", (donations) => {
+client.on("donations", (donations) => {
 	console.log(donations);
 });
 ```
@@ -165,7 +165,7 @@ Emitted when client received a donation. Callback accepts array of [`EmittedDona
 
 Example:
 ```js
-client.on("donation", (donations) => {
+client.on("donations", (donations) => {
     console.log(donations);
 })
 ```
