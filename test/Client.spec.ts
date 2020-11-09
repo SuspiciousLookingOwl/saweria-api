@@ -19,7 +19,7 @@ describe("Saweria Client", () => {
     
 	it("listen to donation event", async () => {
 		const handler = jest.fn();
-		client.on("donation", handler); 
+		client.on("donations", handler); 
 		await client.sendFakeDonation();
 		await new Promise(r => setTimeout(r, 250));
 		expect(handler).toBeCalledWith(
