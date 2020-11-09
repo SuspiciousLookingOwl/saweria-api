@@ -2,7 +2,7 @@ import axios from "./axios";
 import EventSource from "eventsource";
 import ENDPOINT from "./endpoints";
 import { AxiosInstance } from "axios";
-import { User, Transaction, Donation, EventTypes, EventCallbackTypes } from "./types";
+import { User, Transaction, Donation, EventTypes, EventCallbackTypes, EmittedDonation } from "./types";
 
 class SaweriaClient {
 	public jwt: string;
@@ -50,8 +50,11 @@ class SaweriaClient {
 		this.eventSource = new EventSource(`https://api.saweria.co/streams?channel=donation.${await this.getStreamKey()}`);
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		this.eventSource.addEventListener("donations", (message: any) => {
-			const donation = JSON.parse(message.data).data;
-			this.emit("donation", { ...donation, amount: +donation.amount });
+			const donations = (JSON.parse(message.data) as EmittedDonation[]).map(donation => {
+				donation.amount = +donation.amount;
+				return donation; 
+			});
+			this.emit("donation", donations);
 		});
 		this.eventSource.addEventListener("error", (error) => {
 			this.emit("error", error);
