@@ -22,8 +22,8 @@ client.on("login", (user) => {
 	console.log("Logged in as: ", user.username);
 });
 
-client.on("donation", (donation) => {
-	console.log(donation);
+client.on("donations", (donation) => {
+	console.log(donations);
 });
 
 client.login("email", "password");
