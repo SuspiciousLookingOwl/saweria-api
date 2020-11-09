@@ -22,12 +22,16 @@ describe("Saweria Client", () => {
 		client.on("donation", handler); 
 		await client.sendFakeDonation();
 		await new Promise(r => setTimeout(r, 250));
-		expect(handler).toBeCalledWith(expect.objectContaining({
-			amount: 69420,
-			donator: "Someguy",
-			message: "THIS IS A FAKE MESSAGE! HAVE A GOOD ONE",
-			sound: null
-		}));
+		expect(handler).toBeCalledWith(
+			expect.arrayContaining([
+				expect.objectContaining({
+					amount: 69420,
+					donator: "Someguy",
+					message: "THIS IS A FAKE MESSAGE! HAVE A GOOD ONE",
+					sound: null
+				})
+			])
+		);
 	});
     
 	it("logout and prevent call", async () => {
