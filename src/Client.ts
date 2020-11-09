@@ -54,7 +54,7 @@ class SaweriaClient {
 				donation.amount = +donation.amount;
 				return donation; 
 			});
-			this.emit("donation", donations);
+			this.emit("donations", donations);
 		});
 		this.eventSource.addEventListener("error", (error) => {
 			this.emit("error", error);

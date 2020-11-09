@@ -63,10 +63,10 @@ export interface EmittedDonation extends Donation {
     sound: Record<string,string>
 }
 
-export type EventTypes = "login" | "donation" | "error";
+export type EventTypes = "login" | "donations" | "error";
 
 export type EventCallbackTypes<T> =
     T extends "login" ? (user: User) => void:
-    T extends "donation" ? (donations: EmittedDonation[]) => void:
+    T extends "donations" ? (donations: EmittedDonation[]) => void:
     T extends "error" ? (error: any) => void:
     any
