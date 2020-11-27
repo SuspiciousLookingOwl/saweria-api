@@ -2,7 +2,14 @@ import axios from "./axios";
 import EventSource from "eventsource";
 import ENDPOINT from "./endpoints";
 import { AxiosInstance } from "axios";
-import { User, Transaction, Donation, EventTypes, EventCallbackTypes, EmittedDonation } from "./types";
+import {
+	User,
+	Transaction,
+	Donation,
+	EventTypes,
+	EventCallbackTypes,
+	EmittedDonation,
+} from "./types";
 
 class SaweriaClient {
 	public jwt: string;
@@ -10,7 +17,7 @@ class SaweriaClient {
 	private axios: AxiosInstance;
 	private events: Record<string, EventCallbackTypes<string>[]>;
 	private eventSource: EventSource | null;
-	
+
 	constructor(axiosClient = axios) {
 		this.jwt = "";
 		this.events = {};
@@ -18,8 +25,6 @@ class SaweriaClient {
 		this.axios = axiosClient;
 		this.eventSource = null;
 	}
-
-
 
 	/**
 	 * FOR EVENT LISTENER
@@ -29,31 +34,38 @@ class SaweriaClient {
 		this.events[name].push(listener);
 	}
 
-	
 	removeListener(name: string, listenerToRemove: () => void): void {
 		if (!this.events[name]) return;
-		this.events[name] = this.events[name].filter((listener) => listener !== listenerToRemove);
+		this.events[name] = this.events[name].filter(
+			(listener) => listener !== listenerToRemove
+		);
 	}
-	
+
 	private emit(name: string, data: unknown): void {
-		if (!this.events[name]) return;   
-		this.events[name].forEach((callback) => { callback(data); });
+		if (!this.events[name]) return;
+		this.events[name].forEach((callback) => {
+			callback(data);
+		});
 	}
 
 	/**
 	 * Connects to Saweria event source endpoint for donation listener
-	 * 
+	 *
 	 * @returns {string}
 	 */
 	private async initiateEventSource(): Promise<void> {
 		if (this.eventSource !== null) this.eventSource.close();
-		this.eventSource = new EventSource(`https://api.saweria.co/streams?channel=donation.${await this.getStreamKey()}`);
+		this.eventSource = new EventSource(
+			`https://api.saweria.co/streams?channel=donation.${await this.getStreamKey()}`
+		);
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		this.eventSource.addEventListener("donations", (message: any) => {
-			const donations = (JSON.parse(message.data) as EmittedDonation[]).map(donation => {
-				donation.amount = +donation.amount;
-				return donation; 
-			});
+			const donations = (JSON.parse(message.data) as EmittedDonation[]).map(
+				(donation) => {
+					donation.amount = +donation.amount;
+					return donation;
+				}
+			);
 			this.emit("donations", donations);
 		});
 		this.eventSource.addEventListener("error", (error) => {
@@ -61,21 +73,26 @@ class SaweriaClient {
 		});
 	}
 
-
-
 	/**
 	 * Login to Saweria
-	 * 
+	 *
 	 * @param email User email
 	 * @param password User password
 	 * @param otp OTP if the account have 2FA enabled
 	 */
 	async login(jwt: string): Promise<void>;
 	async login(email: string, password: string, otp?: string): Promise<void>;
-	async login(emailOrJwt: string, password?: string, otp?: string): Promise<void> {
+	async login(
+		emailOrJwt: string,
+		password?: string,
+		otp?: string
+	): Promise<void> {
 		let user: User;
 		if (password) {
-			const response = await this.axios[ENDPOINT.LOGIN.METHOD](ENDPOINT.LOGIN.URL, { email: emailOrJwt, password, otp });
+			const response = await this.axios[ENDPOINT.LOGIN.METHOD](
+				ENDPOINT.LOGIN.URL,
+				{ email: emailOrJwt, password, otp }
+			);
 			if (response.status !== 200) throw new Error(response.data);
 			this.setJWT(response.headers.authorization);
 			user = response.data.data;
@@ -86,7 +103,6 @@ class SaweriaClient {
 		await this.initiateEventSource();
 		this.emit("login", user);
 	}
-
 
 	/**
 	 * Remove jwt from HTTP client
@@ -100,21 +116,19 @@ class SaweriaClient {
 		}
 	}
 
-
 	/**
 	 * Get user data
-	 * 
+	 *
 	 * @returns {User}
 	 */
-	async getUser():Promise<User> {
+	async getUser(): Promise<User> {
 		const response = await this.axios[ENDPOINT.USER.METHOD](ENDPOINT.USER.URL);
 		return response.data.data;
 	}
 
-
 	/**
 	 * Set JWT and assign it to HTTP Client for Authorization header
-	 * 
+	 *
 	 * @param jwt JSON Web Token
 	 */
 	private setJWT(jwt: string): void {
@@ -122,16 +136,17 @@ class SaweriaClient {
 		this.axios.defaults.headers.common.authorization = this.jwt;
 	}
 
-
 	/**
 	 * Get user Stream key
-	 * 
+	 *
 	 * @returns {string}
 	 */
 	async getStreamKey(): Promise<string> {
 		if (!this.streamKey) {
-			const response = await this.axios[ENDPOINT.STREAM_KEY.METHOD](ENDPOINT.STREAM_KEY.URL);
-			this.streamKey = response.data.data.streamKey; 
+			const response = await this.axios[ENDPOINT.STREAM_KEY.METHOD](
+				ENDPOINT.STREAM_KEY.URL
+			);
+			this.streamKey = response.data.data.streamKey;
 		}
 		return this.streamKey;
 	}
@@ -144,14 +159,15 @@ class SaweriaClient {
 		await this.initiateEventSource();
 	}
 
-
 	/**
 	 * Get user balance
-	 * 
+	 *
 	 * @returns {number}
 	 */
 	async getBalance(): Promise<number> {
-		const response = await this.axios[ENDPOINT.BALANCE.METHOD](ENDPOINT.BALANCE.URL);
+		const response = await this.axios[ENDPOINT.BALANCE.METHOD](
+			ENDPOINT.BALANCE.URL
+		);
 		return response.data.data.balance;
 	}
 
@@ -162,55 +178,59 @@ class SaweriaClient {
 		await this.axios[ENDPOINT.FAKE.METHOD](ENDPOINT.FAKE.URL);
 	}
 
-
 	/**
 	 * Get user available balance
-	 * 
+	 *
 	 * @returns {number}
 	 */
 	async getAvailableBalance(): Promise<number> {
-		const response = await this.axios[ENDPOINT.AVAILABLE_BALANCE.METHOD](ENDPOINT.AVAILABLE_BALANCE.URL);
+		const response = await this.axios[ENDPOINT.AVAILABLE_BALANCE.METHOD](
+			ENDPOINT.AVAILABLE_BALANCE.URL
+		);
 		return response.data.data.availableBalance;
 	}
 
-
 	/**
 	 * Get transaction list
-	 * 
+	 *
 	 * @param page What page of transaction to get
 	 * @param pageSize How many transaction per page
-	 * 
+	 *
 	 * @returns {Transaction[]}
 	 */
 	async getTransaction(page = 1, pageSize = 15): Promise<Transaction[]> {
-		const response = await this.axios[ENDPOINT.TRANSACTIONS.METHOD](`${ENDPOINT.TRANSACTIONS.URL}?page=${page}&page_size=${pageSize}`);
+		const response = await this.axios[ENDPOINT.TRANSACTIONS.METHOD](
+			`${ENDPOINT.TRANSACTIONS.URL}?page=${page}&page_size=${pageSize}`
+		);
 		return response.data.data.transactions || [];
 	}
 
-
 	/**
 	 * Get milestone progress from given date until now
-	 * 
+	 *
 	 * @param fromDate From date with dd-mm-yyyy format
-	 * 
-	 * @returns {number} 
+	 *
+	 * @returns {number}
 	 */
 	async getMilestoneProgress(fromDate: string | Date): Promise<number> {
-		if (fromDate instanceof Date) fromDate = fromDate.toJSON().slice(0,10).split("-").reverse().join("-");
-		const response = await this.axios[ENDPOINT.MILESTONE_PROGRESS.METHOD](`${ENDPOINT.MILESTONE_PROGRESS.URL}?start_date=${fromDate}`, {
-			headers: {
-				"stream-key": await this.getStreamKey()
+		if (fromDate instanceof Date)
+			fromDate = fromDate.toJSON().slice(0, 10).split("-").reverse().join("-");
+		const response = await this.axios[ENDPOINT.MILESTONE_PROGRESS.METHOD](
+			`${ENDPOINT.MILESTONE_PROGRESS.URL}?start_date=${fromDate}`,
+			{
+				headers: {
+					"stream-key": await this.getStreamKey(),
+				},
 			}
-		});
+		);
 		return response.data.data.progress;
 	}
 
-
 	/**
 	 * Get donation leaderboard from given period
-	 * 
+	 *
 	 * @param period Time period, can be "all", "year", "month", or "week"
-	 * 
+	 *
 	 * @returns {Donation[]}
 	 */
 	async getLeaderboard(period = "all"): Promise<Donation[]> {
@@ -218,11 +238,14 @@ class SaweriaClient {
 		if (!validPeriod.includes(period)) {
 			throw new Error("Invalid Period value");
 		}
-		const response = await this.axios[ENDPOINT.LEADERBOARD.METHOD](`${ENDPOINT.LEADERBOARD.URL}/${period}`, {
-			headers: {
-				"stream-key": await this.getStreamKey()
+		const response = await this.axios[ENDPOINT.LEADERBOARD.METHOD](
+			`${ENDPOINT.LEADERBOARD.URL}/${period}`,
+			{
+				headers: {
+					"stream-key": await this.getStreamKey(),
+				},
 			}
-		});
+		);
 		return response.data.data;
 	}
 }
