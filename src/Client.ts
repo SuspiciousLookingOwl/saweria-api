@@ -24,13 +24,11 @@ class SaweriaClient extends EventEmitter {
 	public jwt: string;
 	private streamKey: string;
 	private axios: AxiosInstance;
-	private events: Record<string, EventCallbackTypes<string>[]>;
 	private eventSource: EventSource | null;
 
 	constructor(axiosClient = axios) {
 		super();
 		this.jwt = "";
-		this.events = {};
 		this.streamKey = "";
 		this.axios = axiosClient;
 		this.eventSource = null;
