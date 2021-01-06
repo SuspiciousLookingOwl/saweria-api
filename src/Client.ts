@@ -1,4 +1,5 @@
 import axios from "./axios";
+import { EventEmitter } from "events";
 import EventSource from "eventsource";
 import ENDPOINT from "./endpoints";
 import { AxiosInstance } from "axios";
@@ -11,7 +12,15 @@ import {
 	EmittedDonation,
 } from "./types";
 
-class SaweriaClient {
+declare interface SaweriaClient {
+	on<T extends EventTypes>(event: T, listener: EventCallbackTypes<T>): this;
+	emit<T extends EventTypes>(
+		event: T,
+		...args: Parameters<EventCallbackTypes<T>>
+	): boolean;
+}
+
+class SaweriaClient extends EventEmitter {
 	public jwt: string;
 	private streamKey: string;
 	private axios: AxiosInstance;
@@ -19,33 +28,12 @@ class SaweriaClient {
 	private eventSource: EventSource | null;
 
 	constructor(axiosClient = axios) {
+		super();
 		this.jwt = "";
 		this.events = {};
 		this.streamKey = "";
 		this.axios = axiosClient;
 		this.eventSource = null;
-	}
-
-	/**
-	 * FOR EVENT LISTENER
-	 */
-	on<T extends EventTypes>(name: T, listener: EventCallbackTypes<T>): void {
-		if (!this.events[name]) this.events[name] = [];
-		this.events[name].push(listener);
-	}
-
-	removeListener(name: string, listenerToRemove: () => void): void {
-		if (!this.events[name]) return;
-		this.events[name] = this.events[name].filter(
-			(listener) => listener !== listenerToRemove
-		);
-	}
-
-	private emit(name: string, data: unknown): void {
-		if (!this.events[name]) return;
-		this.events[name].forEach((callback) => {
-			callback(data);
-		});
 	}
 
 	/**
