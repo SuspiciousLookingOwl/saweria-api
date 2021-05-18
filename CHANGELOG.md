@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2021-05-18
+### Added
+- Support for media donation
+- `Client#getVote()` method
+- `tts` to EmittedDonation type
+- `donation` event (similar to `donations`, but loop through each donation and emits it one by one)
+
 ## [1.2.5] - 2021-01-07
 ### Changed
 - Use Node.js built-in EventEmitter
