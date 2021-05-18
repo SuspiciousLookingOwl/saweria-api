@@ -10,6 +10,7 @@ import {
 	EventTypes,
 	EventCallbackTypes,
 	EmittedDonation,
+	EmittedMedia,
 } from "./interfaces";
 
 declare interface SaweriaClient {
@@ -24,7 +25,10 @@ class SaweriaClient extends EventEmitter {
 	public jwt: string;
 	private streamKey: string;
 	private axios: AxiosInstance;
-	private eventSource: EventSource | null;
+	private eventSource: {
+		alert: EventSource;
+		media: EventSource;
+	} | null;
 
 	constructor(axiosClient = axios) {
 		super();
@@ -40,21 +44,45 @@ class SaweriaClient extends EventEmitter {
 	 * @returns {string}
 	 */
 	private async initiateEventSource(): Promise<void> {
-		if (this.eventSource !== null) this.eventSource.close();
-		this.eventSource = new EventSource(
-			`https://api.saweria.co/streams?channel=donation.${await this.getStreamKey()}`
-		);
+		if (this.eventSource !== null) {
+			this.eventSource.alert.close();
+			this.eventSource.media.close();
+		}
+		this.eventSource = {
+			alert: new EventSource(
+				`https://api.saweria.co/streams?channel=donation.${await this.getStreamKey()}`
+			),
+			media: new EventSource(
+				`https://api.saweria.co/streams?channel=mediashare.${await this.getStreamKey()}`
+			),
+		};
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		this.eventSource.addEventListener("donations", (message: any) => {
+		this.eventSource.alert.addEventListener("donations", (message: any) => {
 			const donations = (JSON.parse(message.data) as EmittedDonation[]).map(
 				(donation) => {
 					donation.amount = +donation.amount;
+					donation.type = "normal";
 					return donation;
 				}
 			);
 			this.emit("donations", donations);
 		});
-		this.eventSource.addEventListener("error", (error) => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		this.eventSource.media.addEventListener("donations", (message: any) => {
+			const media = (JSON.parse(message.data) as EmittedMedia[]).map(
+				(donation) => {
+					donation.amount = +donation.amount;
+					donation.type = "media";
+					return donation;
+				}
+			);
+			this.emit("donations", media);
+		});
+
+		this.eventSource.alert.addEventListener("error", (error) => {
+			this.emit("error", error);
+		});
+		this.eventSource.media.addEventListener("error", (error) => {
 			this.emit("error", error);
 		});
 	}
@@ -97,7 +125,8 @@ class SaweriaClient extends EventEmitter {
 		this.jwt = "";
 		this.axios.defaults.headers.common.authorization = "";
 		if (this.eventSource !== null) {
-			this.eventSource.close();
+			this.eventSource.media.close();
+			this.eventSource.alert.close();
 			this.eventSource = null;
 		}
 	}

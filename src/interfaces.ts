@@ -62,6 +62,19 @@ export interface EmittedDonation extends Donation {
 	message: string;
 	sound: Record<string, string> | null;
 	tts: string;
+	type: "normal";
+}
+
+export interface EmittedMedia extends Donation {
+	media: {
+		end: number;
+		id: string;
+		start: number;
+		type: string;
+	};
+	message: string;
+	sound: Record<string, string> | null;
+	type: "media";
 }
 
 export type EventTypes = "login" | "donations" | "error";
@@ -69,7 +82,7 @@ export type EventTypes = "login" | "donations" | "error";
 export type EventCallbackTypes<T> = T extends "login"
 	? (user: User) => void
 	: T extends "donations"
-	? (donations: EmittedDonation[]) => void
+	? (donations: EmittedDonation[] | EmittedMedia[]) => void
 	: T extends "error"
 	? (error: any) => void
 	: any;
