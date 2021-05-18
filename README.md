@@ -133,6 +133,12 @@ Get donation leaderboard from given time period.
 
 ---
 
+### `async getVote()`
+
+Get currently active vote data
+
+---
+
 ### `async sendFakeDonation()`
 
 Send a fake donation
