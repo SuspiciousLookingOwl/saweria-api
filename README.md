@@ -213,3 +213,7 @@ Media Donation data example:
   }
 ]
 ```
+
+### `donation`
+
+Similar to `donations`, but emits donation one by one when donations are received
