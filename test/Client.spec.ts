@@ -31,7 +31,7 @@ describe("Saweria Client", () => {
 					expect.objectContaining({
 						amount: 69420,
 						donator: "Someguy",
-						message: "THIS IS A FAKE MESSAGE! HAVE A GOOD ONE",
+						message: "Testing 1 2 3 🤭",
 						sound: null,
 					}),
 				])
