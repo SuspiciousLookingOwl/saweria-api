@@ -60,7 +60,8 @@ export interface EmittedDonation extends Donation {
 		tag: string;
 	};
 	message: string;
-	sound: Record<string, string>;
+	sound: Record<string, string> | null;
+	tts: string;
 }
 
 export type EventTypes = "login" | "donations" | "error";
