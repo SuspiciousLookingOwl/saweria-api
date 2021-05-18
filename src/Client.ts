@@ -10,7 +10,7 @@ import {
 	EventTypes,
 	EventCallbackTypes,
 	EmittedDonation,
-} from "./types";
+} from "./interfaces";
 
 declare interface SaweriaClient {
 	on<T extends EventTypes>(event: T, listener: EventCallbackTypes<T>): this;
