@@ -22,21 +22,29 @@ describe("Saweria Client", () => {
 	});
 
 	it("listen to donation event", async () => {
-		const handler = jest.fn();
-		client.on("donations", handler);
+		const donationsHandler = jest.fn();
+		const donationHandler = jest.fn();
+		client.on("donations", donationsHandler);
+		client.on("donation", donationHandler);
+
+		const expected = {
+			amount: 69420,
+			donator: "Someguy",
+			message: "Testing 1 2 3 🤭",
+			sound: null,
+		};
+
 		await client.sendFakeDonation();
-		await waitForExpect(() => {
-			expect(handler).toBeCalledWith(
-				expect.arrayContaining([
-					expect.objectContaining({
-						amount: 69420,
-						donator: "Someguy",
-						message: "Testing 1 2 3 🤭",
-						sound: null,
-					}),
-				])
+		const donationsPromise = waitForExpect(() => {
+			expect(donationsHandler).toBeCalledWith(
+				expect.arrayContaining([expect.objectContaining(expected)])
 			);
 		});
+		const donationPromise = waitForExpect(() => {
+			expect(donationHandler).toBeCalledWith(expect.objectContaining(expected));
+		});
+
+		await Promise.all([donationsPromise, donationPromise]);
 	});
 
 	it("logout and prevent call", async () => {
