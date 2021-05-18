@@ -77,12 +77,14 @@ export interface EmittedMedia extends Donation {
 	type: "media";
 }
 
-export type EventTypes = "login" | "donations" | "error";
+export type EventTypes = "login" | "donations" | "donation" | "error";
 
 export type EventCallbackTypes<T> = T extends "login"
 	? (user: User) => void
 	: T extends "donations"
 	? (donations: EmittedDonation[] | EmittedMedia[]) => void
+	: T extends "donation"
+	? (donations: EmittedDonation | EmittedMedia) => void
 	: T extends "error"
 	? (error: any) => void
 	: any;

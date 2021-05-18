@@ -66,17 +66,19 @@ class SaweriaClient extends EventEmitter {
 				}
 			);
 			this.emit("donations", donations);
+			for (const donation of donations) this.emit("donation", donation);
 		});
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		this.eventSource.media.addEventListener("donations", (message: any) => {
-			const media = (JSON.parse(message.data) as EmittedMedia[]).map(
+			const donations = (JSON.parse(message.data) as EmittedMedia[]).map(
 				(donation) => {
 					donation.amount = +donation.amount;
 					donation.type = "media";
 					return donation;
 				}
 			);
-			this.emit("donations", media);
+			this.emit("donations", donations);
+			for (const donation of donations) this.emit("donation", donation);
 		});
 
 		this.eventSource.alert.addEventListener("error", (error) => {
