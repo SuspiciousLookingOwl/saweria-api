@@ -49,6 +49,15 @@ export interface Transaction {
 	type: string;
 }
 
+export interface Vote {
+	endAt: string;
+	on: boolean;
+	startAt: string;
+	tag: string[];
+	title: string;
+	votes: Record<string, number>;
+}
+
 export interface Donation {
 	amount: number;
 	donator: string;

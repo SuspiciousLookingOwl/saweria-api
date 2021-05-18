@@ -11,6 +11,7 @@ import {
 	EventCallbackTypes,
 	EmittedDonation,
 	EmittedMedia,
+	Vote,
 } from "./interfaces";
 
 declare interface SaweriaClient {
@@ -263,6 +264,18 @@ class SaweriaClient extends EventEmitter {
 				},
 			}
 		);
+		return response.data.data;
+	}
+
+	/**
+	 * Get currently active vote data
+	 *
+	 * @returns {Vote}
+	 */
+	async getVote(): Promise<Vote> {
+		const response = await this.axios[ENDPOINT.VOTE.METHOD](ENDPOINT.VOTE.URL, {
+			headers: { "stream-key": await this.getStreamKey() },
+		});
 		return response.data.data;
 	}
 }

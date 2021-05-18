@@ -27,6 +27,10 @@ export default {
 		URL: "https://api.saweria.co/widgets/leaderboard",
 		METHOD: "get",
 	},
+	VOTE: {
+		URL: "https://api.saweria.co/widgets/vote",
+		METHOD: "get",
+	},
 	FAKE: {
 		URL: "https://api.saweria.co/donations/fake",
 		METHOD: "get",
