@@ -159,18 +159,26 @@ client.on("login", (user) => {
 
 ---
 
-### `donation`
+### `donations`
 
-Emitted when client received a donation. Callback accepts array of [`EmittedDonation`](src/types.ts) as the first parameter
+Emitted when client received a donation. Callback accepts array of [`EmittedDonation`](src/types.ts) or [`EmittedMedia`](src/types.ts) as the first parameter
 
 Example:
 ```js
 client.on("donations", (donations) => {
-    console.log(donations);
+  console.log(donations); // array of donations
+
+  for (const donation of donations) {
+    if (donation.type === "normal") {
+      // normal donation
+    } else if (donation.type === "media") {
+      // donation with media
+    }
+  }
 })
 ```
 
-Donation data example:
+Normal Donation data example:
 ```js
 [
   {
@@ -187,7 +195,21 @@ Donation data example:
     message: 'THIS IS A FAKE MESSAGE! HAVE A GOOD ONE',
     sound: {
       '1547679809default.ogg': 'https://saweria-space.sgp1.cdn.digitaloceanspaces.com/prd/sound/836d7a85-dd70-4028-85fb-00fd785f0928-c527b4f6bd6282e21e78c85343d496fa.ogg'
-    }
+    },
+    tts: "..."
+  }
+]
+```
+
+Media Donation data example:
+```js
+[
+  {
+    amount: "69420",
+    donator: "Someguy",
+    media: { "end": 10, "id": "RRKPkwBkz_0", "start": 0, "type": "yt" },
+    message: "THIS IS A FAKE MESSAGE! HAVE A GOOD ONE",
+    sound: null
   }
 ]
 ```
