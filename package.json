@@ -33,6 +33,6 @@
   "dependencies": {
     "axios": "^0.20.0",
     "axios-case-converter": "^0.6.0",
-    "eventsource": "^1.0.7"
+    "eventsource": "^1.1.0"
   }
 }
