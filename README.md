@@ -17,7 +17,6 @@ const SaweriaClient = require("saweria");
 
 const client = new SaweriaClient();
 
-
 client.on("login", (user) => {
 	console.log("Logged in as: ", user.username);
 });
@@ -29,9 +28,10 @@ client.on("donations", (donations) => {
 client.login("email", "password");
 // or with otp
 client.login("email", "password", "otp");
-
 ```
+
 or only for donation event listener
+
 ```js
 const SaweriaClient = require("saweria");
 
@@ -47,6 +47,7 @@ client.on("donations", (donations) => {
 # Client API
 
 ### `async login(jwt)`
+
 ### `async login(email, password, otp = "")`
 
 Login to Saweria using JWT or email and password. If the account has no 2FA enabled, `otp` will be ignored.
@@ -62,12 +63,12 @@ Login with JWT is useful if your account has 2FA enabled and don't want to get y
    1. Go to [saweria.co](https://saweria.co/) and login to your account
    2. Open browser developer console, and execute `console.log(JSON.parse(localStorage["saweria-user-info"]).token);`
 3. **Sending a request to login endpoint**
-   1. Send a `POST` request to `https://api.saweria.co/auth/login` with these JSON body payload: 
+   1. Send a `POST` request to `https://api.saweria.co/auth/login` with these JSON body payload:
    ```json
    {
-     "email": "example@email.com",
-     "password": "your-password",
-     "otp": "your otp code, optional if your account doesn't have 2FA enabled"
+   	"email": "example@email.com",
+   	"password": "your-password",
+   	"otp": "your otp code, optional if your account doesn't have 2FA enabled"
    }
    ```
    2. Get the JWT token from `Authorization` response header.
@@ -149,14 +150,14 @@ Send a fake donation
 
 Listen to client [events](#Client-Events) and execute `callback` when emitted
 
-
 # Client Events
 
 ### `login`
 
-Emitted when client successfully logged in. Callback accepts [`User`](src/types.ts) as the first parameter 
+Emitted when client successfully logged in. Callback accepts [`User`](src/types.ts) as the first parameter
 
 Example:
+
 ```js
 client.on("login", (user) => {
 	console.log("Logged in as: ", user.username);
@@ -170,54 +171,58 @@ client.on("login", (user) => {
 Emitted when client received a donation. Callback accepts array of [`EmittedDonation`](src/types.ts) or [`EmittedMedia`](src/types.ts) as the first parameter
 
 Example:
+
 ```js
 client.on("donations", (donations) => {
-  console.log(donations); // array of donations
+	console.log(donations); // array of donations
 
-  for (const donation of donations) {
-    if (donation.type === "normal") {
-      // normal donation
-    } else if (donation.type === "media") {
-      // donation with media
-    }
-  }
-})
+	for (const donation of donations) {
+		if (donation.type === "normal") {
+			// normal donation
+		} else if (donation.type === "media") {
+			// donation with media
+		}
+	}
+});
 ```
 
 Normal Donation data example:
+
 ```js
 [
-  {
-    amount: '69420',
-    donator: 'Someguy',
-    media: {
-      src: [
-        'https://media2.giphy.com/media/gw3IWyGkC0rsazTi/giphy.webp',
-        'https://media2.giphy.com/media/gw3IWyGkC0rsazTi/giphy.mp4',
-        'https://media2.giphy.com/media/gw3IWyGkC0rsazTi/giphy.gif'
-      ],
-      tag: 'picture'
-    },
-    message: 'THIS IS A FAKE MESSAGE! HAVE A GOOD ONE',
-    sound: {
-      '1547679809default.ogg': 'https://saweria-space.sgp1.cdn.digitaloceanspaces.com/prd/sound/836d7a85-dd70-4028-85fb-00fd785f0928-c527b4f6bd6282e21e78c85343d496fa.ogg'
-    },
-    tts: "..."
-  }
-]
+	{
+		amount: "69420",
+		donator: "Someguy",
+		media: {
+			src: [
+				"https://media2.giphy.com/media/gw3IWyGkC0rsazTi/giphy.webp",
+				"https://media2.giphy.com/media/gw3IWyGkC0rsazTi/giphy.mp4",
+				"https://media2.giphy.com/media/gw3IWyGkC0rsazTi/giphy.gif",
+			],
+			tag: "picture",
+		},
+		message: "THIS IS A FAKE MESSAGE! HAVE A GOOD ONE",
+		sound: {
+			"1547679809default.ogg":
+				"https://saweria-space.sgp1.cdn.digitaloceanspaces.com/prd/sound/836d7a85-dd70-4028-85fb-00fd785f0928-c527b4f6bd6282e21e78c85343d496fa.ogg",
+		},
+		tts: "...",
+	},
+];
 ```
 
 Media Donation data example:
+
 ```js
 [
-  {
-    amount: "69420",
-    donator: "Someguy",
-    media: { "end": 10, "id": "RRKPkwBkz_0", "start": 0, "type": "yt" },
-    message: "THIS IS A FAKE MESSAGE! HAVE A GOOD ONE",
-    sound: null
-  }
-]
+	{
+		amount: "69420",
+		donator: "Someguy",
+		media: { end: 10, id: "RRKPkwBkz_0", start: 0, type: "yt" },
+		message: "THIS IS A FAKE MESSAGE! HAVE A GOOD ONE",
+		sound: null,
+	},
+];
 ```
 
 ### `donation`
