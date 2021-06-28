@@ -49,13 +49,13 @@ class SaweriaClient extends EventEmitter {
 			this.eventSource.alert.close();
 			this.eventSource.media.close();
 		}
+
+		const url = ENDPOINT.STREAMS.URL;
+		const streamKey = await this.getStreamKey();
+
 		this.eventSource = {
-			alert: new EventSource(
-				`https://api.saweria.co/streams?channel=donation.${await this.getStreamKey()}`
-			),
-			media: new EventSource(
-				`https://api.saweria.co/streams?channel=mediashare.${await this.getStreamKey()}`
-			),
+			alert: new EventSource(`${url}?channel=donation.${streamKey}`),
+			media: new EventSource(`${url}?channel=mediashare.${streamKey}`),
 		};
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		this.eventSource.alert.addEventListener("donations", (message: any) => {

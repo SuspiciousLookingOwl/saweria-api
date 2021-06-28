@@ -39,4 +39,7 @@ export default {
 		URL: "https://api.saweria.co/users",
 		METHOD: "get",
 	},
+	STREAMS: {
+		URL: "https://stream.saweria.co/streams",
+	},
 } as const;
