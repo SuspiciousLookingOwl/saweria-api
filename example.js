@@ -10,4 +10,4 @@ client.on("donation", (donation) => {
 	console.log(donation);
 });
 
-client.login("vinjon99@gmail.com", "Jjnc7!@6dfHaj");
+client.login("email@gmail.com", "longrandompasswordplsusepasswordmanager");
