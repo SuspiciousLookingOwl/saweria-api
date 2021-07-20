@@ -16,6 +16,7 @@ import {
 
 declare interface SaweriaClient {
 	on<T extends EventTypes>(event: T, listener: EventCallbackTypes<T>): this;
+	once<T extends EventTypes>(event: T, listener: EventCallbackTypes<T>): this;
 	emit<T extends EventTypes>(
 		event: T,
 		...args: Parameters<EventCallbackTypes<T>>
