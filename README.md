@@ -1,5 +1,7 @@
 # Saweria API
 
+### NOTE: This lib most likely won't work anymore since Saweria API is now protected by Cloudflare's Browser Integrity Check ([#4](https://github.com/SuspiciousLookingOwl/saweria-api/issues/4#issuecomment-913947264))
+
 Node.js API Wrapper for [Saweria.co](https://saweria.co/)
 
 Check the [Changelog](https://github.com/SuspiciousLookingOwl/saweria-api/blob/master/CHANGELOG.md)
