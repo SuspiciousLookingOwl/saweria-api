@@ -1,6 +1,6 @@
 import axios from "./axios";
 import { EventEmitter } from "events";
-import EventSource from "eventsource";
+import { WebSocket } from "ws";
 import ENDPOINT from "./endpoints";
 import { AxiosInstance } from "axios";
 import {
@@ -27,17 +27,14 @@ class SaweriaClient extends EventEmitter {
 	public jwt: string;
 	private streamKey: string;
 	private axios: AxiosInstance;
-	private eventSource: {
-		alert: EventSource;
-		media: EventSource;
-	} | null;
+	private webSocket: WebSocket | null;
 
 	constructor(axiosClient = axios) {
 		super();
 		this.jwt = "";
 		this.streamKey = "";
 		this.axios = axiosClient;
-		this.eventSource = null;
+		this.webSocket = null;
 	}
 
 	/**
@@ -45,48 +42,31 @@ class SaweriaClient extends EventEmitter {
 	 *
 	 * @returns {string}
 	 */
-	private async initiateEventSource(): Promise<void> {
-		if (this.eventSource !== null) {
-			this.eventSource.alert.close();
-			this.eventSource.media.close();
-		}
+	private async initiateWebSocket(): Promise<void> {
+		if (this.webSocket !== null) this.webSocket.close();
 
 		const url = ENDPOINT.STREAMS.URL;
 		const streamKey = await this.getStreamKey();
 
-		this.eventSource = {
-			alert: new EventSource(`${url}?channel=donation.${streamKey}`),
-			media: new EventSource(`${url}?channel=mediashare.${streamKey}`),
-		};
+		this.webSocket = new WebSocket(`${url}?streamKey=${streamKey}`);
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		this.eventSource.alert.addEventListener("donations", (message: any) => {
-			const donations = (JSON.parse(message.data) as EmittedDonation[]).map(
-				(donation) => {
-					donation.amount = +donation.amount;
-					donation.type = "normal";
-					return donation;
-				}
-			);
-			this.emit("donations", donations);
-			for (const donation of donations) this.emit("donation", donation);
-		});
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		this.eventSource.media.addEventListener("donations", (message: any) => {
-			const donations = (JSON.parse(message.data) as EmittedMedia[]).map(
-				(donation) => {
-					donation.amount = +donation.amount;
-					donation.type = "media";
-					return donation;
-				}
-			);
-			this.emit("donations", donations);
-			for (const donation of donations) this.emit("donation", donation);
+
+		this.webSocket.on("message", (message: string) => {
+			const data = JSON.parse(message);
+			if (data.type === "donation") {
+				const donations = (data.data as EmittedDonation[] | EmittedMedia[]).map(
+					(donation) => {
+						donation.amount = +donation.amount;
+						donation.type = "tts" in donation ? "normal" : "media";
+						return donation;
+					}
+				) as EmittedDonation[] | EmittedMedia[];
+				this.emit("donations", donations);
+				for (const donation of donations) this.emit("donation", donation);
+			}
 		});
 
-		this.eventSource.alert.addEventListener("error", (error) => {
-			this.emit("error", error);
-		});
-		this.eventSource.media.addEventListener("error", (error) => {
+		this.webSocket.on("error", (error) => {
 			this.emit("error", error);
 		});
 	}
@@ -118,7 +98,7 @@ class SaweriaClient extends EventEmitter {
 			this.setJWT(emailOrJwt);
 			user = await this.getUser();
 		}
-		await this.initiateEventSource();
+		await this.initiateWebSocket();
 		this.emit("login", user);
 	}
 
@@ -128,10 +108,9 @@ class SaweriaClient extends EventEmitter {
 	logout(): void {
 		this.jwt = "";
 		this.axios.defaults.headers.common.authorization = "";
-		if (this.eventSource !== null) {
-			this.eventSource.media.close();
-			this.eventSource.alert.close();
-			this.eventSource = null;
+		if (this.webSocket !== null) {
+			this.webSocket.close();
+			this.webSocket = null;
 		}
 	}
 
@@ -175,7 +154,7 @@ class SaweriaClient extends EventEmitter {
 	 */
 	async setStreamKey(streamKey: string): Promise<void> {
 		this.streamKey = streamKey;
-		await this.initiateEventSource();
+		await this.initiateWebSocket();
 	}
 
 	/**

@@ -1,16 +1,21 @@
 export interface User {
 	description: string;
-	disbursementSaweriaCut?: number;
-	donationSaweriaCut?: number;
-	donationTemplate?: string;
+	donationTemplate: string;
 	email: string;
 	emailVerified: boolean;
 	id: string;
 	overlay: {
 		media: boolean;
+		mediashare: boolean;
+		mediashareMaxDuration: number;
+		mediashareRate: 100;
 		min: number;
 		minMedia: number;
+		minTts: number;
+		quickAmounts: number[];
 		sound?: Record<string, string>;
+		textFilter: string;
+		tts: string;
 	};
 	plus?: boolean;
 	profilePicture: string;
@@ -21,7 +26,6 @@ export interface User {
 		twitter: string;
 		youtube: string;
 	};
-	tierName?: string;
 	tierKey?: string;
 	username: string;
 	verified: boolean;
@@ -36,7 +40,7 @@ export interface User {
 
 export interface Transaction {
 	amountRaw: number;
-	created_at: string;
+	createdAt: string;
 	cut: number;
 	donator: {
 		email: string;
