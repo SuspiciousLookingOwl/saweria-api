@@ -1,3 +1,2 @@
-import SaweriaClient from "./Client";
-
-export = SaweriaClient;
+export * from "./Client";
+export * from "./interfaces";

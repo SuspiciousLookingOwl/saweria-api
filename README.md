@@ -15,9 +15,11 @@ npm i saweria
 ## Example
 
 ```js
-const SaweriaClient = require("saweria");
+const { Client } = require("saweria");
+// or
+import { Client } from "saweria";
 
-const client = new SaweriaClient();
+const client = new Client();
 
 client.on("login", (user) => {
 	console.log("Logged in as: ", user.username);
@@ -35,9 +37,11 @@ client.login("email", "password", "otp");
 or only for donation event listener
 
 ```js
-const SaweriaClient = require("saweria");
+const { Client } = require("saweria");
+// or
+import { Client } from "saweria";
 
-const client = new SaweriaClient();
+const client = new Client();
 
 client.setStreamKey("your-stream-key");
 

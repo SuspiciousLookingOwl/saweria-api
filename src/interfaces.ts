@@ -99,5 +99,5 @@ export type EventCallbackTypes<T> = T extends "login"
 	: T extends "donation"
 	? (donations: EmittedDonation | EmittedMedia) => void
 	: T extends "error"
-	? (error: any) => void
-	: any;
+	? (error: unknown) => void
+	: unknown;

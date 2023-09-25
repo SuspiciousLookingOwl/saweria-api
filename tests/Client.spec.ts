@@ -1,14 +1,14 @@
 import "dotenv/config";
 import waitForExpect from "wait-for-expect";
-import Saweria from "../dist/Client";
+import { Client } from "../src";
 
 describe("Saweria Client", () => {
-	const client = new Saweria();
+	const client = new Client();
 
 	it("login", async () => {
 		await client.login(
 			process.env.EMAIL as string,
-			process.env.PASSWORD as string
+			process.env.PASSWORD as string,
 		);
 	});
 
@@ -22,8 +22,8 @@ describe("Saweria Client", () => {
 	});
 
 	it("listen to donation event", async () => {
-		const donationsHandler = jest.fn();
-		const donationHandler = jest.fn();
+		const donationsHandler = vitest.fn();
+		const donationHandler = vitest.fn();
 		client.on("donations", donationsHandler);
 		client.on("donation", donationHandler);
 
@@ -37,7 +37,7 @@ describe("Saweria Client", () => {
 		await client.sendFakeDonation();
 		const donationsPromise = waitForExpect(() => {
 			expect(donationsHandler).toBeCalledWith(
-				expect.arrayContaining([expect.objectContaining(expected)])
+				expect.arrayContaining([expect.objectContaining(expected)]),
 			);
 		});
 		const donationPromise = waitForExpect(() => {

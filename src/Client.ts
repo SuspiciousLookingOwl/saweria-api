@@ -14,7 +14,7 @@ import {
 	Vote,
 } from "./interfaces";
 
-declare interface SaweriaClient {
+declare interface Client {
 	on<T extends EventTypes>(event: T, listener: EventCallbackTypes<T>): this;
 	once<T extends EventTypes>(event: T, listener: EventCallbackTypes<T>): this;
 	emit<T extends EventTypes>(
@@ -23,7 +23,7 @@ declare interface SaweriaClient {
 	): boolean;
 }
 
-class SaweriaClient extends EventEmitter {
+class Client extends EventEmitter {
 	public jwt: string;
 	private streamKey: string;
 	private axios: AxiosInstance;
@@ -260,4 +260,4 @@ class SaweriaClient extends EventEmitter {
 	}
 }
 
-export = SaweriaClient;
+export { Client };
