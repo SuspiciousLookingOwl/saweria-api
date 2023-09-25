@@ -1,8 +1,7 @@
-import axios from "./axios";
+import { Http } from "./http";
 import { EventEmitter } from "events";
 import { WebSocket } from "ws";
-import ENDPOINT from "./endpoints";
-import { AxiosInstance } from "axios";
+import { ENDPOINT } from "./endpoints";
 import {
 	User,
 	Transaction,
@@ -17,23 +16,20 @@ import {
 declare interface Client {
 	on<T extends EventTypes>(event: T, listener: EventCallbackTypes<T>): this;
 	once<T extends EventTypes>(event: T, listener: EventCallbackTypes<T>): this;
-	emit<T extends EventTypes>(
-		event: T,
-		...args: Parameters<EventCallbackTypes<T>>
-	): boolean;
+	emit<T extends EventTypes>(event: T, ...args: Parameters<EventCallbackTypes<T>>): boolean;
 }
 
 class Client extends EventEmitter {
 	public jwt: string;
 	private streamKey: string;
-	private axios: AxiosInstance;
+	private http: Http;
 	private webSocket: WebSocket | null;
 
-	constructor(axiosClient = axios) {
+	constructor() {
 		super();
 		this.jwt = "";
 		this.streamKey = "";
-		this.axios = axiosClient;
+		this.http = new Http();
 		this.webSocket = null;
 	}
 
@@ -54,13 +50,11 @@ class Client extends EventEmitter {
 		this.webSocket.on("message", (message: string) => {
 			const data = JSON.parse(message);
 			if (data.type === "donation") {
-				const donations = (data.data as EmittedDonation[] | EmittedMedia[]).map(
-					(donation) => {
-						donation.amount = +donation.amount;
-						donation.type = "tts" in donation ? "normal" : "media";
-						return donation;
-					}
-				) as EmittedDonation[] | EmittedMedia[];
+				const donations = (data.data as EmittedDonation[] | EmittedMedia[]).map((donation) => {
+					donation.amount = +donation.amount;
+					donation.type = "tts" in donation ? "normal" : "media";
+					return donation;
+				}) as EmittedDonation[] | EmittedMedia[];
 				this.emit("donations", donations);
 				for (const donation of donations) this.emit("donation", donation);
 			}
@@ -80,19 +74,16 @@ class Client extends EventEmitter {
 	 */
 	async login(jwt: string): Promise<void>;
 	async login(email: string, password: string, otp?: string): Promise<void>;
-	async login(
-		emailOrJwt: string,
-		password?: string,
-		otp?: string
-	): Promise<void> {
+	async login(emailOrJwt: string, password?: string, otp?: string): Promise<void> {
 		let user: User;
 		if (password) {
-			const response = await this.axios[ENDPOINT.LOGIN.METHOD](
-				ENDPOINT.LOGIN.URL,
-				{ email: emailOrJwt, password, otp }
-			);
+			const response = await this.http[ENDPOINT.LOGIN.METHOD](ENDPOINT.LOGIN.URL, {
+				email: emailOrJwt,
+				password,
+				otp,
+			});
 			if (response.status !== 200) throw new Error(response.data);
-			this.setJWT(response.headers.authorization);
+			this.setJWT(response.headers.get("authorization")!);
 			user = response.data.data;
 		} else {
 			this.setJWT(emailOrJwt);
@@ -107,7 +98,7 @@ class Client extends EventEmitter {
 	 */
 	logout(): void {
 		this.jwt = "";
-		this.axios.defaults.headers.common.authorization = "";
+		this.http.removeAuthorization();
 		if (this.webSocket !== null) {
 			this.webSocket.close();
 			this.webSocket = null;
@@ -120,7 +111,7 @@ class Client extends EventEmitter {
 	 * @returns {User}
 	 */
 	async getUser(): Promise<User> {
-		const response = await this.axios[ENDPOINT.USER.METHOD](ENDPOINT.USER.URL);
+		const response = await this.http[ENDPOINT.USER.METHOD](ENDPOINT.USER.URL);
 		return response.data.data;
 	}
 
@@ -131,7 +122,7 @@ class Client extends EventEmitter {
 	 */
 	private setJWT(jwt: string): void {
 		this.jwt = jwt;
-		this.axios.defaults.headers.common.authorization = this.jwt;
+		this.http.setAuthorization(jwt);
 	}
 
 	/**
@@ -141,9 +132,7 @@ class Client extends EventEmitter {
 	 */
 	async getStreamKey(): Promise<string> {
 		if (!this.streamKey) {
-			const response = await this.axios[ENDPOINT.STREAM_KEY.METHOD](
-				ENDPOINT.STREAM_KEY.URL
-			);
+			const response = await this.http[ENDPOINT.STREAM_KEY.METHOD](ENDPOINT.STREAM_KEY.URL);
 			this.streamKey = response.data.data.streamKey;
 		}
 		return this.streamKey;
@@ -163,9 +152,7 @@ class Client extends EventEmitter {
 	 * @returns {number}
 	 */
 	async getBalance(): Promise<number> {
-		const response = await this.axios[ENDPOINT.BALANCE.METHOD](
-			ENDPOINT.BALANCE.URL
-		);
+		const response = await this.http[ENDPOINT.BALANCE.METHOD](ENDPOINT.BALANCE.URL);
 		return response.data.data.balance;
 	}
 
@@ -173,7 +160,7 @@ class Client extends EventEmitter {
 	 * Send a fake donation
 	 */
 	async sendFakeDonation(): Promise<void> {
-		await this.axios[ENDPOINT.FAKE.METHOD](ENDPOINT.FAKE.URL);
+		await this.http[ENDPOINT.FAKE.METHOD](ENDPOINT.FAKE.URL);
 	}
 
 	/**
@@ -182,8 +169,8 @@ class Client extends EventEmitter {
 	 * @returns {number}
 	 */
 	async getAvailableBalance(): Promise<number> {
-		const response = await this.axios[ENDPOINT.AVAILABLE_BALANCE.METHOD](
-			ENDPOINT.AVAILABLE_BALANCE.URL
+		const response = await this.http[ENDPOINT.AVAILABLE_BALANCE.METHOD](
+			ENDPOINT.AVAILABLE_BALANCE.URL,
 		);
 		return response.data.data.availableBalance;
 	}
@@ -197,8 +184,8 @@ class Client extends EventEmitter {
 	 * @returns {Transaction[]}
 	 */
 	async getTransaction(page = 1, pageSize = 15): Promise<Transaction[]> {
-		const response = await this.axios[ENDPOINT.TRANSACTIONS.METHOD](
-			`${ENDPOINT.TRANSACTIONS.URL}?page=${page}&page_size=${pageSize}`
+		const response = await this.http[ENDPOINT.TRANSACTIONS.METHOD](
+			`${ENDPOINT.TRANSACTIONS.URL}?page=${page}&page_size=${pageSize}`,
 		);
 		return response.data.data.transactions || [];
 	}
@@ -211,15 +198,13 @@ class Client extends EventEmitter {
 	 * @returns {number}
 	 */
 	async getMilestoneProgress(fromDate: string | Date): Promise<number> {
-		if (fromDate instanceof Date)
+		if (fromDate instanceof Date) {
 			fromDate = fromDate.toJSON().slice(0, 10).split("-").reverse().join("-");
-		const response = await this.axios[ENDPOINT.MILESTONE_PROGRESS.METHOD](
+		}
+
+		const response = await this.http[ENDPOINT.MILESTONE_PROGRESS.METHOD](
 			`${ENDPOINT.MILESTONE_PROGRESS.URL}?start_date=${fromDate}`,
-			{
-				headers: {
-					"stream-key": await this.getStreamKey(),
-				},
-			}
+			{ headers: { "stream-key": await this.getStreamKey() } },
 		);
 		return response.data.data.progress;
 	}
@@ -233,16 +218,11 @@ class Client extends EventEmitter {
 	 */
 	async getLeaderboard(period = "all"): Promise<Donation[]> {
 		const validPeriod = ["all", "year", "month", "week"];
-		if (!validPeriod.includes(period)) {
-			throw new Error("Invalid Period value");
-		}
-		const response = await this.axios[ENDPOINT.LEADERBOARD.METHOD](
+		if (!validPeriod.includes(period)) throw new Error("Invalid Period value");
+
+		const response = await this.http[ENDPOINT.LEADERBOARD.METHOD](
 			`${ENDPOINT.LEADERBOARD.URL}/${period}`,
-			{
-				headers: {
-					"stream-key": await this.getStreamKey(),
-				},
-			}
+			{ headers: { "stream-key": await this.getStreamKey() } },
 		);
 		return response.data.data;
 	}
@@ -253,7 +233,7 @@ class Client extends EventEmitter {
 	 * @returns {Vote}
 	 */
 	async getVote(): Promise<Vote> {
-		const response = await this.axios[ENDPOINT.VOTE.METHOD](ENDPOINT.VOTE.URL, {
+		const response = await this.http[ENDPOINT.VOTE.METHOD](ENDPOINT.VOTE.URL, {
 			headers: { "stream-key": await this.getStreamKey() },
 		});
 		return response.data.data;

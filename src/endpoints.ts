@@ -1,10 +1,10 @@
-export default {
+export const ENDPOINT = {
 	LOGIN: {
 		URL: "https://backend.saweria.co/auth/login",
 		METHOD: "post",
 	},
 	BALANCE: {
-		URL: "https://backend.saweria.co//donations/balance",
+		URL: "https://backend.saweria.co/donations/balance",
 		METHOD: "get",
 	},
 	AVAILABLE_BALANCE: {
